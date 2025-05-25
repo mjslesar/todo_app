@@ -21,5 +21,3 @@ class Task(models.Model):
 class CustomUser(AbstractUser):
     first_name = models.CharField(max_length=100)
     last_name = models.TextField(max_length=100, blank=True)
-
-
