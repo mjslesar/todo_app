@@ -1,5 +1,7 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
+
 
 class Task(models.Model):
     TASK_STATUS = (
@@ -16,3 +18,6 @@ class Task(models.Model):
     def __str__(self):
         return self.title
 
+class CustomUser(AbstractUser):
+    first_name = models.CharField(max_length=100)
+    last_name = models.TextField(max_length=100, blank=True)
