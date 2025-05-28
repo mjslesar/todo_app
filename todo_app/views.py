@@ -15,6 +15,7 @@ import todo_app
 from .models import Task
 from .log_utils import log_event
 
+
 User = get_user_model()
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -61,3 +62,10 @@ def delete(request: HttpRequest, task_id: int):
         messages.success(request, 'Задача успешно удалена')
     return redirect('index')
 
+class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
