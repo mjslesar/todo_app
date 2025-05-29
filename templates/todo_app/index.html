@@ -4,27 +4,43 @@
 {% block title %}Main page{% endblock %}
 
 {% block content %}
+    <div class="container">
     <h2>Add new task</h2>
     <form method="POST">
     {% csrf_token %}
     <input type="text" name="title" placeholder="Write a title for your task" required>
     <button type="submit">Submit</button>
     </form>
+    <h2>Filter tasks</h2>
+    <form method="get" action="">
+  <label for="status">Filter by status:</label>
+  <select name="status" id="status">
+    <option value="">All</option>
+    <option value="new">New</option>
+    <option value="in_progress">In Progress</option>
+    <option value="completed">Completed</option>
+  </select>
+  <button type="submit">Filter</button>
+</form>
 
     <h2>Task list</h2>
     <ul>
     {% for task in tasks %}
     <li>
         <strong>{{ task }}</strong> - {{ task.status }}
-    {% if task.status != 'completed' %}
     <form method="POST" action="{% url 'update' task.id %}" style ="display:inline;">
         {% csrf_token %}
+        <select name="status">
+            <option value="new" {% if task.status == 'new' %}selected{% endif %}>New</option>
+        <option value="in progress" {% if task.status == 'in progress' %}selected{% endif %}>In Progress</option>
+        <option value="completed" {% if task.status == 'completed' %}selected{% endif %}>Completed</option>
+        </select>
         <button type="submit" style ="display:inline;">Change Status</button>
     </form>
-    {% endif %}
     </li>
 {% empty %}
 <li>No tasks yet.</li>
 {% endfor %}
 </ul>
+    </div>
 {% endblock %}

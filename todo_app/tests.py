@@ -31,3 +31,40 @@ class TaskAPITestCase(APITestCase):
         data = {'title': 'New Task'}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 201)
+
+    def test_filter_tasks_by_status_new(self):
+        Task.objects.create(title='Another New Task', status='new', user=self.user)
+        Task.objects.create(title='Completed Task', status='completed', user=self.user)
+        url = reverse('task-list') + '?status=new'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        for task in response.data['results']:
+            self.assertEqual(task['status'], 'new')
+
+    def test_filter_tasks_by_status_completed(self):
+        Task.objects.create(title='Completed Task', status='completed', user=self.user)
+        url = reverse('task-list') + '?status=completed'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        for task in response.data['results']:
+            self.assertEqual(task['status'], 'completed')
+
+    def test_update_task(self):
+        url = reverse('task-detail', args=[self.task.id])
+        data = {'title': 'Updated Task'}
+        response = self.client.patch(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.task.refresh_from_db()
+        self.assertEqual(self.task.title, 'Updated Task')
+
+    def test_delete_task(self):
+        url = reverse('task-detail', args=[self.task.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Task.objects.filter(id=self.task.id).exists())
+
+    def test_delete_task(self):
+        url = reverse('task-detail', args=[self.task.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Task.objects.filter(id=self.task.id).exists())
