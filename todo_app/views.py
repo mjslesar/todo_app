@@ -1,20 +1,16 @@
-
-
 from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpRequest
 from django.shortcuts import redirect, render, get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import get_user_model
-from .serializers import RegisterSerializer
-
-from .serializers import TaskSerializer
-import todo_app
-from .models import Task
+from .forms import CustomUserCreationForm
 from .log_utils import log_event
-
+from .models import Task
+from .serializers import RegisterSerializer
+from .serializers import TaskSerializer
 
 User = get_user_model()
 class RegisterView(generics.CreateAPIView):
@@ -35,19 +31,35 @@ class TaskListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+@login_required
 def index(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         if title:
             Task.objects.create(title=title, status='new', user=request.user)
         return redirect('index')
-
     status_filter = request.GET.get('status')
     tasks = Task.objects.filter(user=request.user)
     if status_filter:
         tasks = tasks.filter(status=status_filter)
-    return render(request, 'todo_app/index.html', {'tasks': tasks})
+    paginator = Paginator(tasks, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
+    return render(request, 'todo_app/index.html', {
+        'tasks': page_obj,
+        'page_obj': page_obj,
+    })
+
+def register_user(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'todo_app/register.html', {'form': form})
 def update(request, task_id):
     task = get_object_or_404(Task, id=task_id)
 

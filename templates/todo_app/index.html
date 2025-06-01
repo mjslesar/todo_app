@@ -17,7 +17,7 @@
   <select name="status" id="status">
     <option value="">All</option>
     <option value="new">New</option>
-    <option value="in_progress">In Progress</option>
+    <option value="in progress">In Progress</option>
     <option value="completed">Completed</option>
   </select>
   <button type="submit">Filter</button>
@@ -25,7 +25,7 @@
 
     <h2>Task list</h2>
     <ul>
-    {% for task in tasks %}
+    {% for task in page_obj %}
     <li>
         <strong>{{ task }}</strong> - {{ task.status }}
     <form method="POST" action="{% url 'update' task.id %}" style ="display:inline;">
@@ -42,5 +42,16 @@
 <li>No tasks yet.</li>
 {% endfor %}
 </ul>
+    </div>
+ <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}page={{ page_obj.previous_page_number }}">« Prev</a>
+        {% endif %}
+
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+            <a href="?{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}page={{ page_obj.next_page_number }}">Next »</a>
+        {% endif %}
     </div>
 {% endblock %}

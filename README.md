@@ -7,23 +7,38 @@ A simple RESTful ToDo list application built with Django and DRF. Includes user 
 
 - JWT Authentication (access/refresh tokens)
 - User registration
--Create / Read / Update / Delete tasks
--Filter tasks by status (New, In Progress, Completed)
--Pagination on task list
+- Create / Read / Update / Delete tasks
+- Filter tasks by status (New, In Progress, Completed)
+- Pagination on task list
 - Permissions: users see only their own tasks
 - Unit tests for API endpoints
 - Responsive web UI (basic styling)
 - PostgreSQL support
 
     
- Installation:
-    
+Run with docker: 
+
+1.Run the container from the directory "docker/" inside the project(required step)
+
+Build and run containers:
+
+    docker-compose up --build
+
+2.Apply migrations & create superuser(optional):
+
+    docker-compose exec web python manage.py migrate
+    docker-compose exec web python manage.py createsuperuser
+
+3.Stop containers:
+
+    docker-compose down
+
+Run with command line:
 1.Clone the repository:
 
     git clone https://github.com/mjslesar/todo_app.git
-    cd todo_app_project
     
-2.Create virtual environment & install dependencies:
+2.Create virtual environment and install dependencies:
 
     python -m venv .venv
     source .venv/bin/activate or .venv\Scripts\activate on Windows
@@ -51,16 +66,16 @@ A simple RESTful ToDo list application built with Django and DRF. Includes user 
 
     python manage.py runserver
 
-6.Access the application
+6.Access the application:
 
     API: http://127.0.0.1:8000/api/
     Web interface: http://127.0.0.1:8000/
 
-Running tests
+Running tests:
 
     python manage.py test
 
-API Endpoints
+API Endpoints:
     
     POST /api/register/ – User registration
     POST /api/token/ – Obtain JWT token
@@ -71,11 +86,12 @@ API Endpoints
     PUT /api/tasks/<id>/ – Update a task
     DELETE /api/tasks/<id>/ – Delete a task
 
-Technologies Used
+Technologies Used:
 
     Python 3.11+
     Django 5.2
     Django REST Framework
     djangorestframework-simplejwt
     PostgreSQL
+    Docker & Docker Compose
 
